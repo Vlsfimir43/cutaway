@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>m0dya — веб-розробник</title>
+<meta name="description" content="Роблю прості та швидкі сайти для малого бізнесу.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  /* Вмикає режим анімацій. Якщо в системі стоїть «менше руху» — анімації вимикаються. */
+  (function () {
+    var d = document.documentElement;
+    d.classList.add("js");
+    if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) d.classList.add("typing");
+  })();
+</script>
+<style>
+  /*
+    ЩО ЗМІНЮВАТИ:
+    1. Тексти (три мови) — у блоці T у <script> внизу файлу.
+    2. Контакти — у розділі «Контакти» в HTML.
+    3. Кольори — у блоці :root одразу під цим коментарем.
+  */
+  :root {
+    --paper: #070a12;
+    --card: #0d1220;
+    --ink: #e6ecf5;
+    --muted: #8d9ab3;
+    --accent: #19f0ff;      /* неон-блакитний */
+    --accent2: #ff2bd6;     /* неон-рожевий */
+    --line: #1c2740;
+    --term: #03050b;
+    --term-text: #d6e2e8;
+    --term-dim: #5f7488;
+    --glow: 0 0 6px rgba(25,240,255,.55), 0 0 22px rgba(25,240,255,.25);
+    --glow2: 0 0 6px rgba(255,43,214,.55), 0 0 22px rgba(255,43,214,.25);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(circle at 12% 0%, rgba(25,240,255,.14), transparent 42%),
+      radial-gradient(circle at 95% 18%, rgba(255,43,214,.11), transparent 38%),
+      linear-gradient(rgba(25,240,255,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(25,240,255,.045) 1px, transparent 1px);
+    background-size: auto, auto, 44px 44px, 44px 44px;
+    color: var(--ink);
+    font-family: "Onest", system-ui, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+  main { max-width: 44rem; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+  h1, h2 { font-weight: 800; line-height: 1.15; margin: 0; }
+  h1 { font-size: clamp(2.2rem, 7vw, 3.4rem); letter-spacing: -0.02em; color: #fff; text-shadow: 0 0 8px rgba(25,240,255,.6), 0 0 28px rgba(25,240,255,.35); }
+  h2 { font-size: 1.5rem; margin-bottom: 0.9rem; color: var(--accent); text-shadow: 0 0 10px rgba(25,240,255,.35); }
+  p { margin: 0 0 1rem; max-width: 38rem; }
+  a { color: var(--accent2); text-underline-offset: 3px; }
+  a:hover { text-shadow: var(--glow2); }
+  a:focus-visible, .btn:focus-visible, .lang button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+  /* Перемикач мови */
+  .lang { display: flex; justify-content: flex-end; gap: 0.4rem; margin-bottom: 1.8rem; }
+  .lang button {
+    font: inherit; font-size: 0.85rem; font-weight: 700;
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 4px;
+    padding: 0.25rem 0.7rem; cursor: pointer;
+    transition: color .2s, border-color .2s, box-shadow .2s;
+  }
+  .lang button:hover { color: var(--ink); border-color: var(--muted); }
+  .lang button[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); box-shadow: var(--glow); }
+
+  .hero { margin-bottom: 3.5rem; }
+  .hero h1 { margin-bottom: 0.6rem; }
+  .lead { font-size: 1.25rem; color: var(--muted); margin-bottom: 1.8rem; }
+
+  /* Терміналовий блок — головний акцент сторінки */
+  .term {
+    background: var(--term);
+    color: var(--term-text);
+    border-radius: 6px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    padding: 1.1rem 1.25rem 1.2rem;
+    overflow-x: auto;
+    border: 1px solid var(--accent);
+    box-shadow: var(--glow), inset 0 0 24px rgba(25,240,255,.06);
+  }
+  .term .dim { color: var(--accent2); text-shadow: 0 0 6px rgba(255,43,214,.6); }
+  .term .ln { margin-bottom: 0.7rem; }
+  .term .ln:last-child { margin-bottom: 0; }
+  .term .res { display: block; }
+  /* Поки йде «друк» — ховаємо те, що ще не надруковано */
+  html.typing .term .ln { display: none; }
+  html.typing .term .ln.show { display: block; }
+  html.typing .term .res { display: none; }
+  html.typing .term .ln.done .res { display: block; }
+
+  .cursor {
+    display: inline-block;
+    width: 0.6em; height: 1.1em;
+    background: var(--accent);
+    box-shadow: var(--glow);
+    vertical-align: text-bottom;
+    animation: blink 1.1s steps(1) infinite;
+  }
+
+  .btn {
+    display: inline-block;
+    margin-top: 1.6rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--accent2);
+    border-radius: 4px;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: var(--glow2);
+    transition: background-color .2s, box-shadow .2s;
+  }
+  .btn:hover { background: rgba(255,43,214,.18); box-shadow: 0 0 10px rgba(255,43,214,.8), 0 0 34px rgba(255,43,214,.4); }
+
+  section { margin-bottom: 3rem; }
+  .skills { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .skills li {
+    background: var(--card);
+    border: 1px solid var(--accent2);
+    box-shadow: 0 0 10px rgba(255,43,214,.2);
+    border-radius: 4px;
+    padding: 0.3rem 0.8rem;
+    font-weight: 500;
+  }
+
+  .project {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent);
+    box-shadow: -6px 0 16px -6px rgba(25,240,255,.45);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    transition: box-shadow .2s, border-color .2s;
+  }
+  .project:hover { border-color: var(--accent); box-shadow: -6px 0 22px -4px rgba(25,240,255,.7); }
+  a.project { display: block; color: inherit; text-decoration: none; }
+  a.project:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .project .open { display: inline-block; margin-top: 0.6rem; color: var(--accent2); font-weight: 700; font-size: 0.95rem; }
+  .project:hover .open { text-shadow: var(--glow2); }
+  .project h3 { margin: 0 0 0.25rem; font-size: 1.1rem; }
+  .project p { margin: 0; color: var(--muted); }
+
+  .contacts { list-style: none; padding: 0; margin: 0; }
+  .contacts li { margin-bottom: 0.4rem; }
+  .contacts span { color: var(--muted); display: inline-block; min-width: 6.5rem; }
+
+  footer { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+
+  /* ---------- Рух ---------- */
+  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes neon-on {
+    0% { opacity: 0; } 10% { opacity: 1; } 14% { opacity: .2; }
+    18% { opacity: 1; } 24% { opacity: .4; } 28%, 100% { opacity: 1; }
+  }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero h1 { animation: neon-on 1.3s ease-out both; }
+    .lead { animation: fade-up .8s ease-out .5s both; }
+    .term { animation: fade-up .8s ease-out .8s both; }
+    .btn { animation: fade-up .8s ease-out 1.1s both; }
+
+    /* Поява блоків при прокрутці */
+    html.js .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+    html.js .reveal.in { opacity: 1; transform: none; }
+    html.js .stagger li { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
+    html.js .stagger.in li { opacity: 1; transform: none; }
+    .stagger li:nth-child(2) { transition-delay: .08s; }
+    .stagger li:nth-child(3) { transition-delay: .16s; }
+    .stagger li:nth-child(4) { transition-delay: .24s; }
+    .stagger li:nth-child(5) { transition-delay: .32s; }
+  }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+
+  @media (max-width: 480px) {
+    .term { font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <nav class="lang" aria-label="Language">
+    <button type="button" data-lang="uk" lang="uk">UA</button>
+    <button type="button" data-lang="en" lang="en">EN</button>
+    <button type="button" data-lang="ru" lang="ru">RU</button>
+  </nav>
+
+  <header class="hero">
+    <h1>m0dya</h1>
+    <p class="lead" data-i18n="lead">Роблю прості й швидкі сайти для малого бізнесу.</p>
+    <div class="term" role="img" data-i18n-aria="t_aria" aria-label="Короткий опис у вигляді терміналу">
+      <div class="ln"><span class="dim">$</span> <span class="cmd" data-cmd="whoami">whoami</span><span class="res" data-i18n="t_who">веб-розробник-початківець, Україна</span></div>
+      <div class="ln"><span class="dim">$</span> <span class="cmd" data-cmd="cat tools.txt">cat tools.txt</span><span class="res">HTML, CSS, JavaScript, Git, Linux Mint</span></div>
+      <div class="ln"><span class="dim">$</span> <span class="cmd" data-cmd="cat status.txt">cat status.txt</span><span class="res" data-i18n="t_status">беру перші замовлення</span></div>
+      <div class="ln ln-end"><span class="dim">$</span> </div>
+    </div>
+    <a class="btn" href="https://t.me/m0d1a" data-i18n="btn">Написати в Telegram</a>
+  </header>
+
+  <section id="about" class="reveal">
+    <h2 data-i18n="h_about">Про мене</h2>
+    <p data-i18n="about1">Мене звати Володимир. Я навчаюся створювати сайти й роблю це щодня: пишу код, розбираюся в помилках і доводжу сторінки до ладу. Працюю на Linux, тому люблю легкі й швидкі рішення, які відкриваються навіть на слабкому телефоні.</p>
+    <p data-i18n="about2">Якщо вам потрібна візитка, лендинг чи сторінка з каталогом, напишіть мені. Домовимося про терміни й ціну ще до початку роботи.</p>
+  </section>
+
+  <section id="skills" class="reveal">
+    <h2 data-i18n="h_skills">Що я роблю</h2>
+    <ul class="skills stagger">
+      <li data-i18n="s1">Сайти-візитки</li>
+      <li data-i18n="s2">Лендинги</li>
+      <li data-i18n="s3">Адаптив під телефон</li>
+      <li data-i18n="s4">Форми замовлення</li>
+      <li data-i18n="s5">Публікація на хостингу</li>
+    </ul>
+  </section>
+
+  <section id="projects" class="reveal">
+    <h2 data-i18n="h_projects">Проєкти</h2>
+    <a class="project" href="https://vlsfimir43.github.io/barbershop-landing/" target="_blank" rel="noopener">
+      <h3>BLADE &amp; CO</h3>
+      <p data-i18n="p1_d">Лендинг із прайсом, галереєю, картою та записом на візит через Telegram.</p>
+      <span class="open" data-i18n="p_open">Відкрити проєкт</span>
+    </a>
+    <a class="project" href="https://vlsfimir43.github.io/print-calculator/" target="_blank" rel="noopener">
+      <h3>PRINTLY</h3>
+      <p data-i18n="p2_d">Калькулятор вартості друку: формат, тираж, папір, знижки за тираж і замовлення в Telegram.</p>
+      <span class="open" data-i18n="p_open">Відкрити проєкт</span>
+    </a>
+    <a class="project" href="https://vlsfimir43.github.io/coffee-shop/" target="_blank" rel="noopener">
+      <h3>ЗЕРНО</h3>
+      <p data-i18n="p3_d">Каталог із пошуком, фільтрами, сортуванням і кошиком. Замовлення йде в Telegram.</p>
+      <span class="open" data-i18n="p_open">Відкрити проєкт</span>
+    </a>
+  </section>
+
+  <section id="contacts" class="reveal">
+    <h2 data-i18n="h_contacts">Контакти</h2>
+    <ul class="contacts">
+      <li><span>Telegram</span> <a href="https://t.me/m0d1a">@m0d1a</a></li>
+      <li><span data-i18n="c_mail">Пошта</span> <a href="mailto:porofi208@gmail.com">porofi208@gmail.com</a></li>
+      <li><span>GitHub</span> <a href="https://github.com/Vlsfimir43">github.com/Vlsfimir43</a></li>
+    </ul>
+  </section>
+
+  <footer class="reveal" data-i18n="footer">© 2026 Володимир Жила</footer>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var d = document.documentElement;
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- 1. Поява блоків при прокрутці ---------- */
+  var items = [].slice.call(document.querySelectorAll(".reveal, .stagger"));
+  if ("IntersectionObserver" in window && !reduce) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    items.forEach(function (el) { io.observe(el); });
+  } else {
+    items.forEach(function (el) { el.classList.add("in"); });
+  }
+
+  /* ---------- 2. Тексти на трьох мовах ---------- */
+  var T = {
+    uk: {
+      title: "m0dya — веб-розробник",
+      desc: "Роблю прості та швидкі сайти для малого бізнесу.",
+      lead: "Роблю прості й швидкі сайти для малого бізнесу.",
+      t_aria: "Короткий опис у вигляді терміналу",
+      t_who: "веб-розробник-початківець, Україна",
+      t_status: "беру перші замовлення",
+      btn: "Написати в Telegram",
+      h_about: "Про мене",
+      about1: "Мене звати Володимир. Я навчаюся створювати сайти й роблю це щодня: пишу код, розбираюся в помилках і доводжу сторінки до ладу. Працюю на Linux, тому люблю легкі й швидкі рішення, які відкриваються навіть на слабкому телефоні.",
+      about2: "Якщо вам потрібна візитка, лендинг чи сторінка з каталогом, напишіть мені. Домовимося про терміни й ціну ще до початку роботи.",
+      h_skills: "Що я роблю",
+      s1: "Сайти-візитки", s2: "Лендинги", s3: "Адаптив під телефон", s4: "Форми замовлення", s5: "Публікація на хостингу",
+      h_projects: "Проєкти",
+      p1_d: "Лендинг із прайсом, галереєю, картою та записом на візит через Telegram.",
+      p2_d: "Калькулятор вартості друку: формат, тираж, папір, знижки за тираж і замовлення в Telegram.",
+      p3_d: "Каталог із пошуком, фільтрами, сортуванням і кошиком. Замовлення йде в Telegram.",
+      p_open: "Відкрити проєкт",
+      h_contacts: "Контакти",
+      c_mail: "Пошта",
+      footer: "© 2026 Володимир Жила"
+    },
+    en: {
+      title: "m0dya — web developer",
+      desc: "I build simple, fast websites for small businesses.",
+      lead: "I build simple, fast websites for small businesses.",
+      t_aria: "Short intro styled as a terminal",
+      t_who: "junior web developer, Ukraine",
+      t_status: "taking my first orders",
+      btn: "Message me on Telegram",
+      h_about: "About me",
+      about1: "My name is Volodymyr. I’m learning to build websites and I practice every day: writing code, figuring out errors and polishing pages. I work on Linux, so I like light, fast solutions that open even on a weak phone.",
+      about2: "If you need a business card site, a landing page or a catalog page, message me. We’ll agree on deadlines and price before I start.",
+      h_skills: "What I do",
+      s1: "Business card sites", s2: "Landing pages", s3: "Mobile-friendly layout", s4: "Order forms", s5: "Hosting setup",
+      h_projects: "Projects",
+      p1_d: "Landing page with a price list, gallery, map and Telegram booking.",
+      p2_d: "Print cost calculator: format, quantity, paper weight, volume discounts and ordering via Telegram.",
+      p3_d: "Catalog with search, filters, sorting and a cart. Orders go to Telegram.",
+      p_open: "Open project",
+      h_contacts: "Contact",
+      c_mail: "Email",
+      footer: "© 2026 Volodymyr Zhyla"
+    },
+    ru: {
+      title: "m0dya — веб-разработчик",
+      desc: "Делаю простые и быстрые сайты для малого бизнеса.",
+      lead: "Делаю простые и быстрые сайты для малого бизнеса.",
+      t_aria: "Краткое описание в виде терминала",
+      t_who: "начинающий веб-разработчик, Украина",
+      t_status: "беру первые заказы",
+      btn: "Написать в Telegram",
+      h_about: "Обо мне",
+      about1: "Меня зовут Владимир. Я учусь создавать сайты и делаю это каждый день: пишу код, разбираюсь в ошибках и довожу страницы до ума. Работаю на Linux, поэтому люблю лёгкие и быстрые решения, которые открываются даже на слабом телефоне.",
+      about2: "Если вам нужна визитка, лендинг или страница с каталогом, напишите мне. Договоримся о сроках и цене ещё до начала работы.",
+      h_skills: "Что я делаю",
+      s1: "Сайты-визитки", s2: "Лендинги", s3: "Адаптив под телефон", s4: "Формы заказа", s5: "Публикация на хостинге",
+      h_projects: "Проекты",
+      p1_d: "Лендинг с прайсом, галереей, картой и записью на визит через Telegram.",
+      p2_d: "Калькулятор стоимости печати: формат, тираж, бумага, скидки за тираж и заказ в Telegram.",
+      p3_d: "Каталог с поиском, фильтрами, сортировкой и корзиной. Заказ уходит в Telegram.",
+      p_open: "Открыть проект",
+      h_contacts: "Контакты",
+      c_mail: "Почта",
+      footer: "© 2026 Владимир Жила"
+    }
+  };
+
+  function saved() { try { return localStorage.getItem("lang"); } catch (e) { return null; } }
+  function save(v) { try { localStorage.setItem("lang", v); } catch (e) {} }
+  function detect() {
+    var s = saved();
+    if (s && T[s]) return s;
+    var n = ((navigator.language || "uk") + "").slice(0, 2).toLowerCase();
+    return T[n] ? n : "en";
+  }
+
+  var buttons = [].slice.call(document.querySelectorAll(".lang button"));
+  function apply(lang) {
+    var t = T[lang];
+    d.lang = lang;
+    document.title = t.title;
+    var meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute("content", t.desc);
+    [].forEach.call(document.querySelectorAll("[data-i18n]"), function (el) {
+      var k = el.getAttribute("data-i18n");
+      if (t[k] !== undefined) el.textContent = t[k];
+    });
+    [].forEach.call(document.querySelectorAll("[data-i18n-aria]"), function (el) {
+      var k = el.getAttribute("data-i18n-aria");
+      if (t[k] !== undefined) el.setAttribute("aria-label", t[k]);
+    });
+    buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === lang)); });
+    save(lang);
+  }
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () { apply(b.getAttribute("data-lang")); });
+  });
+  apply(detect());
+
+  /* ---------- 3. «Друк» у терміналі ---------- */
+  var cur = document.createElement("span");
+  cur.className = "cursor";
+  var lines = [].slice.call(document.querySelectorAll(".term .ln"));
+  var last = lines[lines.length - 1];
+
+  function finish() {
+    d.classList.remove("typing");
+    last.appendChild(cur);
+  }
+
+  if (!d.classList.contains("typing")) {
+    finish();
+  } else {
+    var i = 0;
+    var failsafe = setTimeout(finish, 9000);
+    (function next() {
+      if (i >= lines.length - 1) { clearTimeout(failsafe); finish(); return; }
+      var ln = lines[i];
+      var cmd = ln.querySelector(".cmd");
+      var full = cmd.getAttribute("data-cmd");
+      var tn = document.createTextNode("");
+      cmd.textContent = "";
+      cmd.appendChild(tn);
+      cmd.appendChild(cur);
+      ln.classList.add("show");
+      var j = 0;
+      setTimeout(function typeChar() {
+        j++;
+        tn.nodeValue = full.slice(0, j);
+        if (j < full.length) { setTimeout(typeChar, 55); }
+        else {
+          setTimeout(function () { ln.classList.add("done"); i++; setTimeout(next, 350); }, 300);
+        }
+      }, i === 0 ? 1300 : 0);
+    })();
+  }
+})();
+</script>
+</body>
+</html>
